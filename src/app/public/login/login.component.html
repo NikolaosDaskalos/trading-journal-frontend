@@ -1,0 +1,24 @@
+<div class="row align-items-center justify-content-center">
+
+    <lib-spiner *ngIf="isLoading"></lib-spiner>
+    <lib-alert *ngFor="let alert of alerts; index as i" [alert]="alert" (dismiss)="onAlertDismiss(i)"></lib-alert>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="mx-auto w-50 p-5">
+
+        <h1 class="h3 mb-3 fw-normal">Please login</h1>
+
+        <div class="form-floating">
+            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com"
+                formControlName="username">
+            <label for="floatingInput">Username</label>
+        </div>
+        <div class="form-floating my-2">
+            <input type="password" class="form-control" id="floatingPassword" placeholder="Password"
+                formControlName="password">
+            <label for="floatingPassword">Password</label>
+        </div>
+
+        <button [disabled]="!form.valid" class="w-100 btn btn-lg btn-primary" type="submit">Login</button>
+        <button class="w-100 my-2 btn btn-lg btn-dark" type="button" routerLink="/register">Register</button>
+    </form>
+</div>

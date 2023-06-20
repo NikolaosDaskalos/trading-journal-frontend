@@ -1,0 +1,67 @@
+<div class="row">
+    <lib-spiner *ngIf="isLoading"></lib-spiner>
+    <lib-alert *ngFor="let alert of alerts; index as i" [alert]="alert" (dismiss)="onAlertDismiss(i)"></lib-alert>
+    <form [formGroup]="form" class="d-flex flex-column mx-auto w-75 gap-2">
+        <div class="form-group">
+            <label for="name" class="col-form-label"> Name</label>
+            <input type="text" id="name" class="form-control" formControlName="name"
+                [ngClass]="[hasErrors('name') ? 'is-invalid' : 'is-valid']" aria-describedby="nameFeedback">
+            <div *ngIf="hasErrors('name')" id="nameFeedback" class="invalid-feedback">
+                {{showErrors('name')}}
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="lastname" class="col-form-label">Last Name</label>
+            <input type="text" id="lastname" class="form-control" formControlName="lastname"
+                [ngClass]="[hasErrors('lastname') ? 'is-invalid' : 'is-valid']" aria-describedby="lastnameFeedback">
+            <div *ngIf="hasErrors('lastname')" id="lastnameFeedback" class="invalid-feedback">
+                {{showErrors('lastname')}}
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="age" class="col-form-label">Age</label>
+            <input type="number" id="age" class="form-control"
+                [ngClass]="[hasErrors('age') ? 'is-invalid' : 'is-valid']" formControlName="age"
+                aria-describedby="ageFeedback">
+            <div *ngIf="hasErrors('age')" id="ageFeedback" class="invalid-feedback">
+                {{showErrors('age')}}
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="email" class="col-form-label">E-mail</label>
+            <input type="text" id="email" class="form-control" formControlName="email"
+                [ngClass]="[hasErrors('email') ? 'is-invalid' : 'is-valid']" aria-describedby="emailFeedback">
+            <div *ngIf="hasErrors('email')" id="emailFeedback" class="invalid-feedback">
+                {{showErrors('email')}}
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="repeatPassword" class="col-form-label">Username</label>
+            <input type="text" id="username" class="form-control" formControlName="username"
+                [ngClass]="[hasErrors('username') ? 'is-invalid' : 'is-valid']" aria-describedby="usernameFeedback">
+            <div *ngIf="hasErrors('username')" id="usernameFeedback" class="invalid-feedback">
+                {{showErrors('username')}}
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="password" class="col-form-label">Password</label>
+            <input type="password" id="password" class="form-control" formControlName="password"
+                [ngClass]="[hasErrors('password') ? 'is-invalid' : 'is-valid']" aria-describedby="password'Feedback">
+            <div *ngIf="hasErrors('password')" id="password'Feedback" class="invalid-feedback">
+                {{showErrors('password')}}
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="repeatPassword" class="col-form-label">Repeat Password</label>
+            <input type="password" id="repeatPassword" class="form-control" formControlName="repeatPassword"
+                [ngClass]="[hasErrors('repeatPassword') ? 'is-invalid' : 'is-valid']"
+                aria-describedby="repeatPasswordFeedback">
+            <div *ngIf="hasErrors('repeatPassword')" id="repeatPasswordFeedback" class="invalid-feedback">
+                {{showErrors('repeatPassword')}}
+            </div>
+        </div>
+        <div class="form-group">
+            <button (click)="onSubmit()" [disabled]="!form.valid" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,23 @@
+<div class="row w-50 align-items-center justify-content-center">
+    <lib-alert *ngFor="let alert of alerts; index as i" [alert]="alert" (dismiss)="onAlertDismiss(i)"></lib-alert>
+    <table class="table table-bordered mt-4">
+        <tbody>
+            <tr>
+                <th>Profit</th>
+                <td>{{dashboard?.profit}}</td>
+            </tr>
+            <tr>
+                <th>Win Rate</th>
+                <td>{{dashboard?.winRate}}%</td>
+            </tr>
+            <tr>
+                <th>Gains Per Day</th>
+                <td>{{dashboard?.gainsPerDay}}</td>
+            </tr>
+            <tr>
+                <th>Open Positions</th>
+                <td>{{dashboard?.openPositions}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
