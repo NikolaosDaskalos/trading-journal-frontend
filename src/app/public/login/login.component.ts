@@ -53,15 +53,9 @@ export class LoginComponent implements OnDestroy {
     this.loginSub = this.authService.login(this.form.value).subscribe({
       next: (resp) => {
         this.isLoading = false;
-        this.uiService.alerts.length = 0;
         this.router.navigate(['trades']);
       },
       error: (errorMessage) => {
-        this.uiService.newAlert({
-          type: 'danger',
-          text: errorMessage,
-        });
-
         this.isLoading = false;
       },
     });

@@ -15,7 +15,6 @@ export interface UserDTO {
 
 export interface TradeDTO {
   id?: number;
-  companyName?: string;
   ticker: string;
   buyDate: Date;
   buyQuantity: number;
@@ -24,6 +23,7 @@ export interface TradeDTO {
   sellDate?: Date;
   sellQuantity?: number;
   sellPrice?: number;
+  profitLoss?: number;
 }
 
 export interface AuthDTO {

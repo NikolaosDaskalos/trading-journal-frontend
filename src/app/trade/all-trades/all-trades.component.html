@@ -1,15 +1,26 @@
 <div class="mt-2">
+
     <lib-spiner *ngIf="isLoading"></lib-spiner>
     <lib-alert *ngFor="let alert of alerts; index as i" [alert]="alert" (dismiss)="onAlertDismiss(i)"></lib-alert>
+
     <div class="card">
         <div class="card-header">
-            <span>
-                <strong>My Trades</strong>
-            </span>
-            <span class="container-fluid justify-content-end">
-                <button type="button" class="btn btn-warning btn-sm" (click)="addRow()">+</button>
-            </span>
 
+            <div class="row">
+                <div class="col">
+                    <strong>My Trades</strong>
+                </div>
+                <div class="col">
+                    <form class="d-flex" role="search">
+                        <input class="form-control me-2" type="search" placeholder="Search By Ticker"
+                            aria-label="Search">
+                        <button class="btn btn-outline-success" type="button">Search</button>
+                    </form>
+                </div>
+                <div class="col text-end">
+                    <button type="button" class="btn btn-warning me-3" (click)="addRow()">+</button>
+                </div>
+            </div>
         </div>
 
         <div class="card-body">
@@ -18,7 +29,6 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Company</th>
                             <th>Ticker*</th>
                             <th>Buy Date*</th>
                             <th>Buy Qty*</th>
@@ -27,23 +37,18 @@
                             <th>Sell Date</th>
                             <th>Sell Qty</th>
                             <th>Sell Price</th>
+                            <th>P&L</th>
                             <th></th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <ng-container formArrayName="tableRows" *ngFor="let group of control.controls ; let i=index">
+                        <ng-container formArrayName="tableRows" *ngFor="let group of formArray.controls ; let i=index">
                             <tr [formGroupName]="i" [ngClass]="winLoseOrOpenTrade(group)">
                                 <td>
                                     <input type="number" class="form-control-plaintext" readonly [value]="i + 1">
                                 </td>
 
-                                <td>
-                                    <input type="text" [readOnly]="!group.get('isEditable')?.value"
-                                        [ngClass]="{'border border-2 rounded-2': group.get('isEditable')?.value}"
-                                        class="form-control-plaintext" [value]="group.get('companyName')?.value"
-                                        formControlName="companyName">
-                                </td>
                                 <td>
                                     <input type="text" [readOnly]="!group.get('isEditable')?.value"
                                         [ngClass]="{'border border-2 rounded-2': group.get('isEditable')?.value}"
@@ -98,6 +103,10 @@
                                         [ngClass]="{'border border-2 rounded-2': group.get('isEditable')?.value}"
                                         class="form-control-plaintext" [value]="group.get('sellPrice')?.value"
                                         formControlName="sellPrice">
+                                </td>
+                                <td>
+                                    <input type="number" readonly class="form-control-plaintext"
+                                        [value]="group.get('profitLoss')?.value" formControlName="profitLoss">
                                 </td>
                                 <td>
                                     <button *ngIf="!group.get('isEditable')?.value; else send"

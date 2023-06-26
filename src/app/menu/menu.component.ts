@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 
 @Component({
@@ -12,11 +11,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   private userSub: Subscription | undefined;
   isAuthenticated = false;
 
-  constructor(
-    private authService: AuthService,
-
-    private router: Router
-  ) {}
+  constructor(private authService: AuthService) {}
 
   ngOnInit() {
     this.userSub = this.authService.user.subscribe((user) => {

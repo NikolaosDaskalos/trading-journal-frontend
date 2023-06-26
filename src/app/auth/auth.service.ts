@@ -1,9 +1,20 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AuthDTO, LoginDTO, User, UserDTO, getTokenExp } from 'shared';
-import { BehaviorSubject, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import {
+  AuthDTO,
+  LOGIN_URL,
+  LOGOUT_URL,
+  LoginDTO,
+  REGISTER_URL,
+  User,
+  UserDTO,
+  getTokenExp,
+  getTokenUsername,
+} from 'shared';
+import { BehaviorSubject, take } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { UiService } from 'ui';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -11,7 +22,11 @@ export class AuthService {
 
   user = new BehaviorSubject<User | null>(null);
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private uiService: UiService
+  ) {}
 
   autoLogin() {
     const userDataString = localStorage.getItem('userData');
@@ -38,45 +53,28 @@ export class AuthService {
   }
 
   login(loginDTO: LoginDTO) {
-    return this.http
-      .post<AuthDTO>('http://localhost:8080/api/login', loginDTO)
-      .pipe(
-        catchError((err) => {
-          if (err instanceof HttpErrorResponse && err.status === 403) {
-            return throwError(() => 'Wrong Username or Password');
-          } else if (err instanceof HttpErrorResponse && err.status >= 500) {
-            return throwError(() => 'Internal Server error');
-          } else {
-            return throwError(() => 'Unexpected error occurred');
-          }
-        }),
-        tap((responseData) => {
-          this.handleAuthentication(responseData, loginDTO.username.trim());
-        })
-      );
+    return this.http.post<AuthDTO>(LOGIN_URL, loginDTO).pipe(
+      take(1),
+      tap({
+        next: (responseData) => this.handleAuthentication(responseData),
+        error: (err) => this.handleErrors(err),
+      })
+    );
   }
 
   register(user: UserDTO) {
-    return this.http
-      .post<AuthDTO>('http://localhost:8080/api/register', user)
-      .pipe(
-        catchError((err) => {
-          if (err instanceof HttpErrorResponse && err.status === 409) {
-            return throwError(() => err.error);
-          } else if (err instanceof HttpErrorResponse && err.status >= 500) {
-            return throwError(() => 'Internal Server error');
-          } else {
-            return throwError(() => 'Unexpected error occurred');
-          }
-        }),
-        tap((responseData) => {
-          this.handleAuthentication(responseData, user.username.trim());
-        })
-      );
+    return this.http.post<AuthDTO>(REGISTER_URL, user).pipe(
+      take(1),
+      tap({
+        next: (responseData) => this.handleAuthentication(responseData),
+        error: (err) => this.handleErrors(err),
+      })
+    );
   }
 
-  private handleAuthentication(authDTO: AuthDTO, username: string) {
-    const user = new User(username, authDTO.accessToken, authDTO.refreshToken);
+  private handleAuthentication(authDTO: AuthDTO) {
+    const username = getTokenUsername(authDTO.accessToken);
+    const user = new User(username!, authDTO.accessToken, authDTO.refreshToken);
     this.user.next(user);
     this.autoLogout(authDTO.accessToken);
     localStorage.setItem('userData', JSON.stringify(user));
@@ -91,7 +89,7 @@ export class AuthService {
   }
 
   logout() {
-    this.http.get('http://localhost:8080/api/logout');
+    this.http.get(LOGOUT_URL);
     this.user.next(null);
     localStorage.removeItem('userData');
     if (this.tokenExpirationTimer) {
@@ -99,5 +97,29 @@ export class AuthService {
     }
     this.tokenExpirationTimer = null;
     this.router.navigate(['']);
+  }
+
+  private handleErrors(err: any) {
+    console.log(JSON.stringify(err));
+    if (
+      err instanceof HttpErrorResponse &&
+      err.status === 403 &&
+      err.url?.includes('/api/login')
+    ) {
+      this.createAlert('Wrong Username or Password');
+    } else if (err instanceof HttpErrorResponse && err.status !== 0) {
+      this.createAlert(err.message);
+    } else if (err instanceof HttpErrorResponse && err.status >= 500) {
+      this.createAlert('Internal Server error');
+    } else {
+      this.createAlert('Unexpected error occurred');
+    }
+  }
+
+  private createAlert(errorMessage: string) {
+    this.uiService.newAlert({
+      type: 'danger',
+      text: errorMessage,
+    });
   }
 }

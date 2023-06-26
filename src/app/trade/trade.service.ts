@@ -36,6 +36,10 @@ export class TradeService {
       .pipe(take(1), tap({ error: (err) => this.handleErrors(err) }));
   }
 
+  searchTrades(ticker: string) {
+    return this.http.get;
+  }
+
   getDashboard() {
     return this.http
       .get<dashboardDTO>('http://localhost:8080/api/stats')

@@ -1,0 +1,67 @@
+<div class="row align-items-center justify-content-center">
+
+    <lib-spiner *ngIf="isLoading"></lib-spiner>
+    <lib-alert *ngFor="let alert of alerts; index as i" [alert]="alert" (dismiss)="onAlertDismiss(i)"></lib-alert>
+
+    <form [formGroup]="form" class="mx-auto p-5">
+        <div class="row g-3 align-items-center my-1">
+            <div class="col-1">
+                <label for="firstname" class="col-form-label">Firstname</label>
+            </div>
+            <div class="col-auto">
+                <input type="text" id="firstname" [ngClass]="hasErrors('name')" class="form-control"
+                    formControlName="name">
+            </div>
+
+            <div class="col-1">
+                <label for="lastname" class="col-form-label">Lastname</label>
+            </div>
+            <div class="col-auto">
+                <input type="text" id="lastname" [ngClass]="hasErrors('lastname')" class="form-control"
+                    formControlName="lastname">
+            </div>
+        </div>
+
+        <div class="row g-3 align-items-center my-1">
+            <div class="col-1">
+                <label for="username" class="col-form-label">Username</label>
+            </div>
+            <div class="col-auto">
+                <input type="text" id="username" [ngClass]="hasErrors('username')" class="form-control"
+                    formControlName="username">
+            </div>
+
+            <div class="col-1">
+                <label for="password" class="col-form-label">Password</label>
+            </div>
+            <div class="col-auto">
+                <input type="password" id="password" [ngClass]="hasErrors('password')" class="form-control"
+                    formControlName="password">
+            </div>
+        </div>
+
+        <div class="row g-3 align-items-center my-1">
+            <div class="col-1">
+                <label for="email" class="col-form-label">Email</label>
+            </div>
+            <div class="col-auto">
+                <input type="text" id="email" [ngClass]="hasErrors('email')" class="form-control"
+                    formControlName="email">
+            </div>
+
+            <div class="col-1">
+                <label for="age" class="col-form-label">Age</label>
+            </div>
+            <div class="col-auto">
+                <input type="number" id="age" [ngClass]="hasErrors('age')" class="form-control" formControlName="age">
+            </div>
+        </div>
+        <button class="btn btn-success my-4" (click)="onEdit()" type="button" *ngIf="form.disabled; else submit">Edit
+            Settings</button>
+        <ng-template #submit>
+            <button class="btn btn-dark my-4" [disabled]="!form.valid" (keydown.enter)="onUpdate()" (click)="onUpdate()"
+                type="submit">Update
+                Settings</button>
+        </ng-template>
+    </form>
+</div>

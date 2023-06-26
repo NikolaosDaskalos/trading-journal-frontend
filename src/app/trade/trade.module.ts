@@ -7,6 +7,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 
 import { UiModule } from 'ui';
 import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { authGuard } from '../auth/auth.guard';
 
 const routes: Routes = [
@@ -22,6 +23,7 @@ const routes: Routes = [
   declarations: [AllTradesComponent, DashboardComponent],
   imports: [
     CommonModule,
+    FormsModule,
     ReactiveFormsModule,
     UiModule,
     RouterModule.forChild(routes),
