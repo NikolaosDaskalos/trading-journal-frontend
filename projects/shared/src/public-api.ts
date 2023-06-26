@@ -9,3 +9,4 @@ export * from './lib/interfaces';
 export * from './lib/menus';
 export * from './lib/user.model';
 export * from './lib/jwt.helper';
+export * from './lib/url';

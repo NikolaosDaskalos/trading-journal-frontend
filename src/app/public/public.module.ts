@@ -6,8 +6,7 @@ import { WelcomeComponent } from './welcome/welcome.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { RegisterComponent } from './register/register.component';
 import { LoginComponent } from './login/login.component';
-
-import { UiModule, UiService } from 'ui';
+import { UiModule } from 'ui';
 
 const routes: Routes = [
   {
@@ -15,7 +14,6 @@ const routes: Routes = [
     component: RegisterComponent,
   },
   { path: 'login', component: LoginComponent },
-
   { path: '', component: WelcomeComponent },
   { path: '**', component: PageNotFoundComponent },
 ];
@@ -33,6 +31,6 @@ const routes: Routes = [
     UiModule,
     RouterModule.forChild(routes),
   ],
-  providers: [UiService],
+  providers: [],
 })
 export class PublicModule {}

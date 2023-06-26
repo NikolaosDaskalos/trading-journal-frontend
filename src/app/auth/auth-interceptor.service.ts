@@ -10,6 +10,8 @@ import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthInterceptorService implements HttpInterceptor {
+  constructor(private authService: AuthService) {}
+
   intercept(
     req: HttpRequest<any>,
     next: HttpHandler
@@ -21,15 +23,17 @@ export class AuthInterceptorService implements HttpInterceptor {
           return next.handle(req);
         }
 
-        const modifiedReq = req.clone({
-          setHeaders: {
-            Authorization: `Bearer ${user?.accessToken}`,
-          },
-        });
+        const modifiedReq = this.addTokenHeader(req, user.accessToken);
         return next.handle(modifiedReq);
       })
     );
   }
 
-  constructor(private authService: AuthService) {}
+  private addTokenHeader(req: HttpRequest<any>, token: string) {
+    return req.clone({
+      setHeaders: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
 }

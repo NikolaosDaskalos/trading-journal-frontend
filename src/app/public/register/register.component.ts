@@ -71,19 +71,10 @@ export class RegisterComponent implements OnInit {
       .register(this.formCopyExcludeRepeatPassword())
       .subscribe({
         next: (AuthDTO: AuthDTO) => {
-          this.uiService.newAlert({
-            type: 'success',
-            text: 'You are registered sucessfully',
-          });
           this.isLoading = false;
-          this.uiService.alerts.length = 0;
           this.router.navigate(['trades']);
         },
         error: (errorMessage) => {
-          this.uiService.newAlert({
-            type: 'danger',
-            text: errorMessage,
-          });
           this.isLoading = false;
         },
       });

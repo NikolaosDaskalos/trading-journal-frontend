@@ -24,8 +24,9 @@ import {
 })
 export class AllTradesComponent implements OnInit, OnDestroy {
   tradeTable: FormGroup;
-  control: FormArray;
+  formArray: FormArray;
   touchedRows: TradeDTO[] = [];
+  searchInput = '';
   allTradesSub: Subscription | undefined;
   deleteTradeSub: Subscription | undefined;
   createradeSub: Subscription | undefined;
@@ -44,7 +45,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
       tableRows: this.fb.array([]),
     });
 
-    this.control = this.tradeTable.get('tableRows') as FormArray;
+    this.formArray = this.tradeTable.get('tableRows') as FormArray;
   }
 
   ngOnInit(): void {
@@ -68,7 +69,6 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     return this.fb.group(
       {
         id: [''],
-        companyName: [''],
         ticker: [
           '',
           [
@@ -87,6 +87,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
         sellDate: ['', dateValidator()],
         sellQuantity: ['', [postiveNumber()]],
         sellPrice: ['', postiveNumber()],
+        profitLoss: [''],
         isEditable: [true],
         isCreated: [true],
       },
@@ -95,7 +96,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   }
 
   addRow() {
-    this.control.insert(0, this.initiateForm());
+    this.formArray.insert(0, this.initiateForm());
   }
 
   onDelete(group: AbstractControl, index: number) {
@@ -104,7 +105,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
       .deleteTrade(group.get('id')?.value)
       .subscribe({
         next: (res) => {
-          this.control.removeAt(index);
+          this.formArray.removeAt(index);
 
           this.isLoading = false;
         },
@@ -121,7 +122,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
 
   onCancelEdit(group: AbstractControl, index: number) {
     if (group.get('isCreated')?.value) {
-      this.control.removeAt(index);
+      this.formArray.removeAt(index);
     } else {
       group.get('isEditable')?.setValue(false);
     }
@@ -142,6 +143,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
             group.get('id')?.setValue(res.id);
             group.get('isEditable')?.setValue(false);
             group.get('isCreated')?.setValue(false);
+            group.get('profitLoss')?.setValue(res.profitLoss);
             this.isLoading = false;
           },
           error: (err) => {
@@ -157,6 +159,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
             group.get('id')?.setValue(res.id);
             group.get('isEditable')?.setValue(false);
             group.get('isCreated')?.setValue(false);
+            group.get('profitLoss')?.setValue(res.profitLoss);
             this.isLoading = false;
           },
           error: (err) => {
@@ -168,15 +171,31 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     }
   }
 
+  onSearchChange(searchInput: string) {
+    if (!this.searchInput) {
+      return;
+    }
+
+    const searchMatches = this.formArray.controls.filter(
+      (cont) => cont.get('ticker')?.value === this.searchInput.trim()
+    );
+    this.formArray.clear();
+    this.formArray.push(searchMatches);
+  }
+
+  onSearch(ticker: string) {
+    this.formArray.clear();
+    this.formArray;
+  }
+
   addAllTrades(dtoList: TradeDTO[]) {
-    dtoList.map((dto) => this.control.push(this.mapToFormGroup(dto)));
+    dtoList.map((dto) => this.formArray.push(this.mapToFormGroup(dto)));
   }
 
   mapToFormGroup(tradeDTO: TradeDTO): FormGroup {
     return this.fb.group(
       {
         id: [tradeDTO.id],
-        companyName: [tradeDTO.companyName],
         ticker: [
           tradeDTO.ticker,
           [
@@ -198,6 +217,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
         sellDate: [tradeDTO.sellDate, dateValidator()],
         sellQuantity: [tradeDTO.sellQuantity, postiveNumber()],
         sellPrice: [tradeDTO.sellPrice, postiveNumber()],
+        profitLoss: [tradeDTO.profitLoss],
         isEditable: [false],
         isCreated: [false],
       },
