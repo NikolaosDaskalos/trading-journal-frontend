@@ -4,18 +4,19 @@
     <lib-alert *ngFor="let alert of alerts; index as i" [alert]="alert" (dismiss)="onAlertDismiss(i)"></lib-alert>
 
     <div class="card">
-        <div class="card-header">
+        <div class="card-header vertical-align-center">
 
             <div class="row">
-                <div class="col">
-                    <strong>My Trades</strong>
+                <div class="col fs-5 mt-1">
+                    <strong>
+                        My Trades
+                    </strong>
                 </div>
-                <div class="col">
-                    <form class="d-flex" role="search">
-                        <input class="form-control me-2" type="search" placeholder="Search By Ticker"
-                            aria-label="Search">
-                        <button class="btn btn-outline-success" type="button">Search</button>
-                    </form>
+                <div class="col d-flex">
+                    <input #search class="form-control me-2" (input)="onSearchChange(search.value)" type="search"
+                        placeholder="Search By Ticker" aria-label="Search">
+                    <button class="btn btn-outline-success" type="button">Search</button>
+                    <p href="">{{searchInput}}</p>
                 </div>
                 <div class="col text-end">
                     <button type="button" class="btn btn-warning me-3" (click)="addRow()">+</button>
@@ -43,86 +44,174 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <ng-container formArrayName="tableRows" *ngFor="let group of formArray.controls ; let i=index">
-                            <tr [formGroupName]="i" [ngClass]="winLoseOrOpenTrade(group)">
-                                <td>
-                                    <input type="number" class="form-control-plaintext" readonly [value]="i + 1">
-                                </td>
+                        <ng-container *ngIf="!searchArray.controls.length" formArrayName="tableRows">
+                            <ng-container *ngFor="let group of formArray.controls ; let i=index">
+                                <tr [formGroupName]="i" [ngClass]="winLoseOrOpenTrade(group)">
+                                    <td>
+                                        <input type="number" class="form-control-plaintext" readonly [value]="i + 1">
+                                    </td>
 
-                                <td>
-                                    <input type="text" [readOnly]="!group.get('isEditable')?.value"
-                                        [ngClass]="{'border border-2 rounded-2': group.get('isEditable')?.value}"
-                                        class="form-control-plaintext" [value]="group.get('ticker')?.value"
-                                        formControlName="ticker">
-                                </td>
-                                <td>
-                                    <input type="text" [readOnly]="!group.get('isEditable')?.value"
-                                        [ngClass]="{'border border-2 rounded-2': group.get('isEditable')?.value}"
-                                        class="form-control-plaintext" [value]="group.get('buyDate')?.value"
-                                        formControlName="buyDate">
-                                </td>
-                                <td>
-                                    <input type="number" [readOnly]="!group.get('isEditable')?.value"
-                                        [ngClass]="{'border border-2 rounded-2': group.get('isEditable')?.value}"
-                                        class="form-control-plaintext" [value]="group.get('buyQuantity')?.value"
-                                        formControlName="buyQuantity">
-                                </td>
-                                <td>
-                                    <input type="number" [readOnly]="!group.get('isEditable')?.value"
-                                        [ngClass]="{'border border-2 rounded-2': group.get('isEditable')?.value}"
-                                        class="form-control-plaintext" [value]="group.get('buyPrice')?.value"
-                                        formControlName="buyPrice">
-                                </td>
-                                <td>
-                                    <select *ngIf="group.get('isEditable')?.value;else simpleRow" class="form-select"
-                                        formControlName="position">
-                                        <option selected value="LONG">LONG</option>
-                                        <option value="SHORT">SHORT</option>
-                                    </select>
+                                    <td>
+                                        <input type="text" [readOnly]="!group.get('isEditable')?.value"
+                                            [ngClass]="{'border border-2 rounded-2': group.get('isEditable')?.value}"
+                                            class="form-control-plaintext" [value]="group.get('ticker')?.value"
+                                            formControlName="ticker">
+                                    </td>
+                                    <td>
+                                        <input type="text" [readOnly]="!group.get('isEditable')?.value"
+                                            [ngClass]="{'border border-2 rounded-2': group.get('isEditable')?.value}"
+                                            class="form-control-plaintext" [value]="group.get('buyDate')?.value"
+                                            formControlName="buyDate">
+                                    </td>
+                                    <td>
+                                        <input type="number" [readOnly]="!group.get('isEditable')?.value"
+                                            [ngClass]="{'border border-2 rounded-2': group.get('isEditable')?.value}"
+                                            class="form-control-plaintext" [value]="group.get('buyQuantity')?.value"
+                                            formControlName="buyQuantity">
+                                    </td>
+                                    <td>
+                                        <input type="number" [readOnly]="!group.get('isEditable')?.value"
+                                            [ngClass]="{'border border-2 rounded-2': group.get('isEditable')?.value}"
+                                            class="form-control-plaintext" [value]="group.get('buyPrice')?.value"
+                                            formControlName="buyPrice">
+                                    </td>
+                                    <td>
+                                        <select *ngIf="group.get('isEditable')?.value;else simpleRow"
+                                            class="form-select" formControlName="position">
+                                            <option selected value="LONG">LONG</option>
+                                            <option value="SHORT">SHORT</option>
+                                        </select>
 
-                                    <ng-template #simpleRow>
-                                        <input type="text" readonly class="form-control-plaintext"
-                                            [value]="group.get('position')?.value" formControlName="position">
+                                        <ng-template #simpleRow>
+                                            <input type="text" readonly class="form-control-plaintext"
+                                                [value]="group.get('position')?.value" formControlName="position">
+                                        </ng-template>
+
+                                    </td>
+                                    <td>
+                                        <input type="text" [readOnly]="!group.get('isEditable')?.value"
+                                            [ngClass]="{'border border-2 rounded-2': group.get('isEditable')?.value}"
+                                            class="form-control-plaintext" [value]="group.get('sellDate')?.value"
+                                            formControlName="sellDate">
+                                    </td>
+                                    <td>
+                                        <input type="number" [readOnly]="!group.get('isEditable')?.value"
+                                            [ngClass]="{'border border-2 rounded-2': group.get('isEditable')?.value}"
+                                            class="form-control-plaintext" [value]="group.get('sellQuantity')?.value"
+                                            formControlName="sellQuantity">
+                                    </td>
+                                    <td>
+                                        <input type="number" [readOnly]="!group.get('isEditable')?.value"
+                                            [ngClass]="{'border border-2 rounded-2': group.get('isEditable')?.value}"
+                                            class="form-control-plaintext" [value]="group.get('sellPrice')?.value"
+                                            formControlName="sellPrice">
+                                    </td>
+                                    <td>
+                                        <input type="number" readonly class="form-control-plaintext"
+                                            [value]="group.get('profitLoss')?.value" formControlName="profitLoss">
+                                    </td>
+                                    <td>
+                                        <button *ngIf="!group.get('isEditable')?.value; else send"
+                                            class="btn btn-outline-info" (click)="onEdit(group)"
+                                            type="button">Edit</button>
+                                    </td>
+                                    <td><button *ngIf="!group.get('isEditable')?.value; else cancel"
+                                            class="btn btn-outline-danger" type="button"
+                                            (click)="onDelete(group,i)">Delete</button></td>
+                                    <ng-template #send>
+                                        <button class="btn btn-success" [disabled]="!group.valid"
+                                            (click)="onSend(group)">Send</button>
                                     </ng-template>
+                                    <ng-template #cancel>
+                                        <button class="btn btn-dark" (click)="onCancelEdit(group,i)">Cancel</button>
+                                    </ng-template>
+                                </tr>
+                            </ng-container>
+                        </ng-container>
 
-                                </td>
-                                <td>
-                                    <input type="text" [readOnly]="!group.get('isEditable')?.value"
-                                        [ngClass]="{'border border-2 rounded-2': group.get('isEditable')?.value}"
-                                        class="form-control-plaintext" [value]="group.get('sellDate')?.value"
-                                        formControlName="sellDate">
-                                </td>
-                                <td>
-                                    <input type="number" [readOnly]="!group.get('isEditable')?.value"
-                                        [ngClass]="{'border border-2 rounded-2': group.get('isEditable')?.value}"
-                                        class="form-control-plaintext" [value]="group.get('sellQuantity')?.value"
-                                        formControlName="sellQuantity">
-                                </td>
-                                <td>
-                                    <input type="number" [readOnly]="!group.get('isEditable')?.value"
-                                        [ngClass]="{'border border-2 rounded-2': group.get('isEditable')?.value}"
-                                        class="form-control-plaintext" [value]="group.get('sellPrice')?.value"
-                                        formControlName="sellPrice">
-                                </td>
-                                <td>
-                                    <input type="number" readonly class="form-control-plaintext"
-                                        [value]="group.get('profitLoss')?.value" formControlName="profitLoss">
-                                </td>
-                                <td>
-                                    <button *ngIf="!group.get('isEditable')?.value; else send"
-                                        class="btn btn-outline-info" (click)="onEdit(group)" type="button">Edit</button>
-                                </td>
-                                <td><button *ngIf="!group.get('isEditable')?.value; else cancel"
-                                        class="btn btn-outline-danger" type="button"
-                                        (click)="onDelete(group,i)">Delete</button></td>
-                                <ng-template #send>
-                                    <button class="btn btn-success" [disabled]="!group.valid"
-                                        (click)="onSend(group)">Send</button>
-                                </ng-template>
-                                <ng-template #cancel>
-                                    <button class="btn btn-dark" (click)="onCancelEdit(group,i)">Cancel</button>
-                                </ng-template>
-                            </tr>
+                        <ng-container *ngIf="searchArray.controls.length" formArrayName="searchRows">
+                            <ng-container *ngFor="let group of searchArray.controls ; let i=index">
+                                <tr [formGroupName]="i" [ngClass]="winLoseOrOpenTrade(group)">
+                                    <td>
+                                        <input type="number" class="form-control-plaintext" readonly [value]="i + 1">
+                                    </td>
+
+                                    <td>
+                                        <input type="text" [readOnly]="!group.get('isEditable')?.value"
+                                            [ngClass]="{'border border-2 rounded-2': group.get('isEditable')?.value}"
+                                            class="form-control-plaintext" [value]="group.get('ticker')?.value"
+                                            formControlName="ticker">
+                                    </td>
+                                    <td>
+                                        <input type="text" [readOnly]="!group.get('isEditable')?.value"
+                                            [ngClass]="{'border border-2 rounded-2': group.get('isEditable')?.value}"
+                                            class="form-control-plaintext" [value]="group.get('buyDate')?.value"
+                                            formControlName="buyDate">
+                                    </td>
+                                    <td>
+                                        <input type="number" [readOnly]="!group.get('isEditable')?.value"
+                                            [ngClass]="{'border border-2 rounded-2': group.get('isEditable')?.value}"
+                                            class="form-control-plaintext" [value]="group.get('buyQuantity')?.value"
+                                            formControlName="buyQuantity">
+                                    </td>
+                                    <td>
+                                        <input type="number" [readOnly]="!group.get('isEditable')?.value"
+                                            [ngClass]="{'border border-2 rounded-2': group.get('isEditable')?.value}"
+                                            class="form-control-plaintext" [value]="group.get('buyPrice')?.value"
+                                            formControlName="buyPrice">
+                                    </td>
+                                    <td>
+                                        <select *ngIf="group.get('isEditable')?.value;else simpleRow"
+                                            class="form-select" formControlName="position">
+                                            <option selected value="LONG">LONG</option>
+                                            <option value="SHORT">SHORT</option>
+                                        </select>
+
+                                        <ng-template #simpleRow>
+                                            <input type="text" readonly class="form-control-plaintext"
+                                                [value]="group.get('position')?.value" formControlName="position">
+                                        </ng-template>
+
+                                    </td>
+                                    <td>
+                                        <input type="text" [readOnly]="!group.get('isEditable')?.value"
+                                            [ngClass]="{'border border-2 rounded-2': group.get('isEditable')?.value}"
+                                            class="form-control-plaintext" [value]="group.get('sellDate')?.value"
+                                            formControlName="sellDate">
+                                    </td>
+                                    <td>
+                                        <input type="number" [readOnly]="!group.get('isEditable')?.value"
+                                            [ngClass]="{'border border-2 rounded-2': group.get('isEditable')?.value}"
+                                            class="form-control-plaintext" [value]="group.get('sellQuantity')?.value"
+                                            formControlName="sellQuantity">
+                                    </td>
+                                    <td>
+                                        <input type="number" [readOnly]="!group.get('isEditable')?.value"
+                                            [ngClass]="{'border border-2 rounded-2': group.get('isEditable')?.value}"
+                                            class="form-control-plaintext" [value]="group.get('sellPrice')?.value"
+                                            formControlName="sellPrice">
+                                    </td>
+                                    <td>
+                                        <input type="number" readonly class="form-control-plaintext"
+                                            [value]="group.get('profitLoss')?.value" formControlName="profitLoss">
+                                    </td>
+                                    <td>
+                                        <button *ngIf="!group.get('isEditable')?.value; else send"
+                                            class="btn btn-outline-info" (click)="onEdit(group)"
+                                            type="button">Edit</button>
+                                    </td>
+                                    <td><button *ngIf="!group.get('isEditable')?.value; else cancel"
+                                            class="btn btn-outline-danger" type="button"
+                                            (click)="onDelete(group,i)">Delete</button></td>
+                                    <ng-template #send>
+                                        <button class="btn btn-success" [disabled]="!group.valid"
+                                            (click)="onSend(group)">Send</button>
+                                    </ng-template>
+                                    <ng-template #cancel>
+                                        <button class="btn btn-dark" (click)="onCancelEdit(group,i)">Cancel</button>
+                                    </ng-template>
+                                </tr>
+                            </ng-container>
                         </ng-container>
                     </tbody>
                 </table>
