@@ -59,6 +59,7 @@
         <button class="btn btn-success my-4" (click)="onEdit()" type="button" *ngIf="form.disabled; else submit">Edit
             Settings</button>
         <ng-template #submit>
+            <button class="btn btn-danger me-4" type="button" (click)="onCancel()">Cancel</button>
             <button class="btn btn-dark my-4" [disabled]="!form.valid" (keydown.enter)="onUpdate()" (click)="onUpdate()"
                 type="submit">Update
                 Settings</button>

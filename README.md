@@ -4,7 +4,14 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 ## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+- Run `ng build shared` to build `shared` library.
+- Run `ng build ui` to build `ui` library.
+- Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+
+## Comunication With Back End
+
+- The backend `BASE URL` is configured to `http://localhost:8080`.
+- To change this config navigate to `projects/shared/url.ts` and modify the value of `BASE_URL` variable to your needs.
 
 ## Code scaffolding
 

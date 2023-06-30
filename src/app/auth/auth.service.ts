@@ -100,7 +100,6 @@ export class AuthService {
   }
 
   private handleErrors(err: any) {
-    console.log(JSON.stringify(err));
     if (
       err instanceof HttpErrorResponse &&
       err.status === 403 &&

@@ -62,6 +62,10 @@ export class AccountSettingsComponent implements OnInit, OnDestroy {
     this.form.get('username')?.disable();
   }
 
+  onCancel() {
+    this.form.disable();
+  }
+
   onUpdate() {
     if (this.form.invalid) {
       this.uiService.newAlert({

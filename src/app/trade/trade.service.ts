@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Alert, TradeDTO, dashboardDTO } from 'shared';
+import { Alert, STATS_URL, TRADES_URL, TradeDTO, dashboardDTO } from 'shared';
 import { take } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { AbstractControl } from '@angular/forms';
@@ -8,41 +8,41 @@ import { UiService } from 'ui';
 
 @Injectable()
 export class TradeService {
-  tradesURI = 'http://localhost:8080/api/trades';
-
   constructor(private http: HttpClient, private uiService: UiService) {}
 
   getAllTrades() {
     return this.http
-      .get<TradeDTO[]>(this.tradesURI)
+      .get<TradeDTO[]>(TRADES_URL)
       .pipe(take(1), tap({ error: (err) => this.handleErrors(err) }));
   }
 
   createTrade(trade: TradeDTO) {
     return this.http
-      .post<TradeDTO>(this.tradesURI, trade)
+      .post<TradeDTO>(TRADES_URL, trade)
       .pipe(take(1), tap({ error: (err) => this.handleErrors(err) }));
   }
 
   updateTrade(trade: TradeDTO) {
     return this.http
-      .put<TradeDTO>(`${this.tradesURI}/${trade.id}`, trade)
+      .put<TradeDTO>(`${TRADES_URL}/${trade.id}`, trade)
       .pipe(take(1), tap({ error: (err) => this.handleErrors(err) }));
   }
 
   deleteTrade(id: number) {
     return this.http
-      .delete(`${this.tradesURI}/${id}`)
+      .delete(`${TRADES_URL}/${id}`)
       .pipe(take(1), tap({ error: (err) => this.handleErrors(err) }));
   }
 
   searchTrades(ticker: string) {
-    return this.http.get;
+    return this.http
+      .get<TradeDTO[]>(`${TRADES_URL}/search/${ticker}`)
+      .pipe(take(1), tap({ error: (err) => this.handleErrors(err) }));
   }
 
   getDashboard() {
     return this.http
-      .get<dashboardDTO>('http://localhost:8080/api/stats')
+      .get<dashboardDTO>(STATS_URL)
       .pipe(take(1), tap({ error: (err) => this.handleErrors(err) }));
   }
 
