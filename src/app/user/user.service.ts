@@ -39,7 +39,6 @@ export class UserService {
   }
 
   updateUser(user: UserDTO) {
-    console.log(JSON.stringify(user));
     return this.http.put<UserDTO>(USERS_URL, user).pipe(
       take(1),
       tap({

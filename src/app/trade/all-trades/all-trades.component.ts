@@ -32,6 +32,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   deleteTradeSub: Subscription | undefined;
   createradeSub: Subscription | undefined;
   updateTradeSub: Subscription | undefined;
+  searchTradeSub: Subscription | undefined;
 
   alerts = this.uiService.alerts;
   isLoading = false;
@@ -55,7 +56,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.allTradesSub = this.tradeService.getAllTrades().subscribe({
       next: (resp) => {
-        this.addAllTrades(resp);
+        this.addAllTrades(resp, this.formArray);
         this.isLoading = false;
       },
       error: (err) => {
@@ -69,7 +70,8 @@ export class AllTradesComponent implements OnInit, OnDestroy {
   }
 
   addRow() {
-    this.formArray.insert(0, this.mapToFormGroup({} as TradeDTO));
+    this.searchArray.clear();
+    this.formArray.insert(0, this.mapToFormGroup(null));
   }
 
   onDelete(group: AbstractControl, index: number) {
@@ -144,7 +146,7 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     }
   }
 
-  onSearchChange(searchInput: string) {
+  onSearchInputChange(searchInput: string) {
     this.searchArray.clear();
 
     searchInput = searchInput.toUpperCase();
@@ -160,21 +162,34 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     searchResults.forEach((control) => this.searchArray.push(control));
   }
 
-  // onSearch(ticker: string) {
-  //   this.formArray.clear();
-  //   this.formArray;
-  // }
+  onSearch(ticker: string) {
+    this.searchArray.clear();
+    if (!ticker) return;
 
-  addAllTrades(dtoList: TradeDTO[]) {
-    dtoList.map((dto) => this.formArray.push(this.mapToFormGroup(dto)));
+    this.isLoading = true;
+    this.searchTradeSub = this.tradeService.searchTrades(ticker).subscribe({
+      next: (resp) => {
+        if (resp.length > 0) {
+          this.addAllTrades(resp, this.searchArray);
+        } else {
+          this.searchArray.push(this.mapToFormGroup({} as TradeDTO));
+        }
+        this.isLoading = false;
+      },
+      error: (err) => (this.isLoading = false),
+    });
   }
 
-  mapToFormGroup(tradeDTO: TradeDTO): FormGroup {
+  addAllTrades(dtoList: TradeDTO[], formArray: FormArray) {
+    dtoList.map((dto) => formArray.push(this.mapToFormGroup(dto)));
+  }
+
+  mapToFormGroup(tradeDTO: TradeDTO | null): FormGroup {
     return this.fb.group(
       {
-        id: [tradeDTO.id ?? ''],
+        id: [tradeDTO?.id ?? ''],
         ticker: [
-          tradeDTO.ticker,
+          tradeDTO?.ticker,
           [
             Validators.required,
             Validators.minLength(2),
@@ -182,27 +197,27 @@ export class AllTradesComponent implements OnInit, OnDestroy {
           ],
         ],
         buyDate: [
-          tradeDTO.buyDate ?? '',
+          tradeDTO?.buyDate ?? '',
           [Validators.required, dateValidator()],
         ],
         buyQuantity: [
-          tradeDTO.buyQuantity ?? '',
+          tradeDTO?.buyQuantity ?? '',
           [Validators.required, postiveNumber()],
         ],
         buyPrice: [
-          tradeDTO.buyPrice ?? '',
+          tradeDTO?.buyPrice ?? '',
           [Validators.required, postiveNumber()],
         ],
         position: [
-          tradeDTO.position ?? '',
+          tradeDTO?.position ?? '',
           [Validators.required, Validators.pattern('(LONG|SHORT)')],
         ],
-        sellDate: [tradeDTO.sellDate ?? '', dateValidator()],
-        sellQuantity: [tradeDTO.sellQuantity ?? '', postiveNumber()],
-        sellPrice: [tradeDTO.sellPrice ?? '', postiveNumber()],
-        profitLoss: [tradeDTO.profitLoss ?? ''],
-        isEditable: [false],
-        isCreated: [false],
+        sellDate: [tradeDTO?.sellDate ?? '', dateValidator()],
+        sellQuantity: [tradeDTO?.sellQuantity ?? '', postiveNumber()],
+        sellPrice: [tradeDTO?.sellPrice ?? '', postiveNumber()],
+        profitLoss: [tradeDTO?.profitLoss ?? ''],
+        isEditable: [tradeDTO ? false : true],
+        isCreated: [tradeDTO ? false : true],
       },
       { validators: [formDatesValidation(), formQuantityValidation()] }
     );
@@ -232,17 +247,11 @@ export class AllTradesComponent implements OnInit, OnDestroy {
     return 'table-light';
   }
 
-  // formArraySelector(searchInput: string) {
-  //   if (searchInput) {
-  //     return 'searchRows';
-  //   }
-  //   return 'tableRows';
-  // }
-
   ngOnDestroy() {
     this.allTradesSub?.unsubscribe;
     this.createradeSub?.unsubscribe;
     this.deleteTradeSub?.unsubscribe;
     this.updateTradeSub?.unsubscribe;
+    this.searchTradeSub?.unsubscribe;
   }
 }
